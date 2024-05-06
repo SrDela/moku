@@ -2,7 +2,7 @@
 Moku is an utility set for AWS Lambda that allows you to ease interaction between other AWS services.
 
 ## Supported interactions
----
+
 ### API Gateway Routing
 
 You can map functions to execute for resources and methods received via event in the lambda handler by using the `APIGatewayRouter`.
