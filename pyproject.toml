@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "moku"
+version = "0.1.0"
+description = "An utility package for aws"
+authors = ["Andres De Las Salas <andresdlassalas@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typing-extensions = "^4.11.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+coverage = "^7.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = [
+    "src/utilities/environment/*",
+    "tests/*"
+]
