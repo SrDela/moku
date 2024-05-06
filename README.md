@@ -44,7 +44,7 @@ myevent = S3EventBuilder.on('myevent').do(myaction)
 
 # When using the mapper you only need to add the events
 mapper = S3EventMapper()
-mapper.add_event(my_event)
+mapper.add_event(myevent)
 
 # And call the resolver to get your action according
 # to the received event in your lambda handler
