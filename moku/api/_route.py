@@ -55,6 +55,7 @@ class APIGatewayRoute:
         self.__path_map[key].methods[self.__method] = action
         self.__path_map[key].action = self.__action
         self.__path_map[key].id_ = self.__id
+        self.clean_attributes()
 
     def __validate_http_method(self, method: str) -> None:
         try:
@@ -72,3 +73,9 @@ class APIGatewayRoute:
     @property
     def map_(self) -> _typing.RouteMap:
         return self.__path_map
+
+    def clean_attributes(self) -> None:
+        self.__root = None
+        self.__action = None
+        self.__id = None
+        self.__method = None
