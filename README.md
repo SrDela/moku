@@ -58,3 +58,24 @@ def lambda_handler(events: dict):
 
     return response_stack
 ```
+---
+### WebSockets API Gateway Router
+
+```python
+from moku.ws import WebSocketAPIRouter
+
+
+router = WebSocketAPIRouter()
+
+# You can define your events by route key
+router.on("$connect").perform(action)
+
+# And call the resolver to get your action according
+# to the received route key in your lambda handler
+def lambda_handler(event: dict):
+
+    route_key = event["requestContext"].get("routeKey")
+    action = router.resolve(route_key)
+
+    return action(event)
+```
