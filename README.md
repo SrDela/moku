@@ -61,6 +61,8 @@ def lambda_handler(events: dict):
 ---
 ### WebSockets API Gateway Router
 
+You can map functions to execute for route keys received via event in the lambda handler by using the `WebSocketAPIRouter`.
+
 ```python
 from moku.ws import WebSocketAPIRouter
 

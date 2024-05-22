@@ -1,5 +1,5 @@
 from __future__ import annotations
-from inspect import isfunction
+from inspect import isfunction, ismethod
 
 from . import _typing
 from .exceptions import InvalidRouteActionException, InvalidRouteKeyException
@@ -22,7 +22,7 @@ class WebSocketAPIRouter:
         return self
 
     def perform(self, action: _typing.RouteAction) -> None:
-        if not isfunction(action):
+        if not isfunction(action) and not ismethod(action):
             raise InvalidRouteActionException("Action must be a function.")
         self.__route_actions[self.__route_key] = action
 
