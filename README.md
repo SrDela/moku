@@ -59,7 +59,7 @@ def lambda_handler(events: dict):
     return response_stack
 ```
 ---
-### WebSockets API Gateway Router
+### WebSockets API Gateway Routing
 
 You can map functions to execute for route keys received via event in the lambda handler by using the `WebSocketAPIRouter`.
 
@@ -80,4 +80,33 @@ def lambda_handler(event: dict):
     action = router.resolve(route_key)
 
     return action(event)
+```
+---
+### Authorizer Mapping
+
+You can map authorizer functions and keep all your different authorizers in one place by using the `AuthorizerMapper`.
+
+```python
+from moku.authorizer import AuthorizerTypeBuilder, AuthorizerMapper
+
+# You can define your authorizer functions
+req_authorizer = AuthorizerTypeBuilder.for_auth_type('REQUEST').use(
+    request_procedure
+)
+token_authorizer = AuthorizerTypeBuilder.for_auth_type('TOKEN').use(
+    token_procedure
+)
+
+# When using the mapper you only need to add the authorizers
+mapper = AuthorizerMapper()
+mapper.add_authorizer(req_authorizer)
+mapper.add_authorizer(token_authorizer)
+
+# And call the resolver to get your procedure according
+# to the received event in your lambda handler
+def lambda_handler(event: dict):
+
+    procedure = mapper.resolve(auth_type=event.get('type'))
+
+    return procedure(event)
 ```
