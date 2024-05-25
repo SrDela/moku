@@ -1,10 +1,12 @@
 from typing import Dict
 
+from moku._interfaces.event_handler import EventHandler
+
 from . import _typing
 from .exceptions import DuplicatedAuthorizerError, UnmappedAuthorizationTypeError
 
 
-class AuthorizerMapper:
+class AuthorizerMapper(EventHandler):
 
     def __init__(self) -> None:
         self.__auth_map: Dict[str, _typing.AuthorizationProcedure] = {}

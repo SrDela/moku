@@ -1,11 +1,13 @@
 from __future__ import annotations
 from inspect import isfunction, ismethod
 
+from moku._interfaces.event_handler import EventHandler
+
 from . import _typing
 from .exceptions import InvalidRouteActionException, InvalidRouteKeyException
 
 
-class WebSocketAPIRouter:
+class WebSocketAPIRouter(EventHandler):
 
     def __init__(self) -> None:
         self.__route_actions: _typing.RouteActionList = {}

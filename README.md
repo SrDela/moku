@@ -110,3 +110,60 @@ def lambda_handler(event: dict):
 
     return procedure(event)
 ```
+---
+### Custom Lambda Event Handler
+
+You can defined a mapper to expect a custom type of event in order to execute some actions by using the `CustomEventHandler`.
+
+Custom Event Example:
+```json
+{
+    "type": "custom",
+    "body": {"some": "data"},
+    ...
+}
+```
+Lambda Handler Example:
+```python
+from moku.lambda_function import CustomEventActionBuilder, CustomEventHandler
+
+# Define your custom actions
+custom_action = CustomEventActionBuilder.execute(action).on(
+    'custom'
+)
+# Add them
+handler = CustomEventHandler(action_selection_key="type")
+handler.add_action(custom_action)
+
+# And call the resolver to execute the action according
+# to the received event in your lambda handler
+def lambda_handler(event: dict)
+    return handler.resolve(event)
+```
+If you are using `pydantic V2`, you can also specify a model validator for your event. It will be called when resolving and the object will be passed as the argument of the action instead of the original event.
+```python
+from pydantic import BaseModel, Field
+
+
+class ContentType(BaseModel):
+    message: str
+    data: list
+
+
+class EventValidator(BaseModel):
+    type: str = Field(min_length=3)
+    content: ContentType
+
+
+def my_action(event: EventValidator):
+    if event.content.message == "OK":
+        # Do something
+        pass
+
+
+handler = CustomEventHandler(
+    action_selection_key="type",
+    event_validator=EventValidator
+)
+handler.add_action(my_action)
+```

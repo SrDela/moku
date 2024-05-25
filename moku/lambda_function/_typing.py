@@ -1,7 +1,11 @@
 from typing import Callable, Dict
-from moku._interfaces.event_source import EventSource
-from moku._interfaces.event_handler import EventHandler
-
+from dataclasses import dataclass
 
 DefaultLambdaHandler = Callable[[dict], dict]
-TriggerMap = Dict[EventSource, EventHandler]
+CustomEventMap = Dict[str, DefaultLambdaHandler]
+
+
+@dataclass
+class DefaultCustomEventAction:
+    name: str
+    action: DefaultLambdaHandler
