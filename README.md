@@ -111,6 +111,28 @@ def lambda_handler(event: dict):
     return procedure(event)
 ```
 ---
+### S3 Object Lambda Processor Mapping
+You can map processors per file extension with object lambda `ExtensionMapper`.
+
+```python
+from moku.s3.object_lambda import ExtensionMapper, ExtensionProcessorBuilder
+
+# You can define your processors per extension
+processor = ExtensionProcessorBuilder.bind(extension).to(lambda x: x)
+
+# When using the mapper you only need to add the extension processors
+mapper = ExtensionMapper()
+mapper.add_extension(processor)
+
+# And call the resolver to get your procedure according
+# to the received file extension in your lambda handler
+def lambda_handler(event: dict):
+    extension = find_file_extension(event)
+    func = mapper.resolve(extension)
+    return func(event)
+
+```
+---
 ### Custom Lambda Event Handler
 
 You can defined a mapper to expect a custom type of event in order to execute some actions by using the `CustomEventHandler`.
