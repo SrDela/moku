@@ -1,5 +1,3 @@
-from typing import Dict
-
 from moku._interfaces.event_handler import EventHandler
 
 from . import _typing
@@ -10,22 +8,17 @@ from .exceptions import InvalidRouteException
 class APIGatewayRouter(EventHandler):
 
     def __init__(self) -> None:
-        self.__routes: Dict[str, _typing.RouteProps] = {}
+        self.__routes: _typing.RouteMap = {}
 
     def add_route(self, route: APIGatewayRoute) -> None:
-        for path, values in route.map_.items():
-            path = path.removesuffix('/')
-            self.__routes[path] = values
+        self.__routes |= route.map_
 
     @property
     def routes(self):
         return self.__routes
 
     def resolve(self, resource: str, method: str) -> _typing.RouteAction:
-        route = self.__routes.get(resource)
-        if route is None:
-            raise InvalidRouteException(f"Resource '{resource}' is not mapped")
-        action = route.methods.get(method)
+        action = self.__routes.get(APIGatewayRoute.build_key(resource, method))
         if action is None:
-            raise InvalidRouteException("Invalid method.")
+            raise InvalidRouteException(f"The {method} method for resource '{resource}' is not mapped.")
         return action

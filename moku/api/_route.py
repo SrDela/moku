@@ -1,22 +1,8 @@
 from __future__ import annotations
 from typing import Optional
-from collections import defaultdict
-from enum import Enum
 
 from .exceptions import InvalidRouteException
 from . import _typing
-
-
-class HTTPMethod(Enum):
-    GET: str = "GET"
-    POST: str = "POST"
-    PATCH: str = "PATCH"
-    PUT: str = "PUT"
-    DELETE: str = "DELETE"
-
-    @classmethod
-    def list_(cls):
-        return [method.value for method in cls]
 
 
 class APIGatewayRoute:
@@ -24,47 +10,38 @@ class APIGatewayRoute:
     def __init__(self, prefix: str) -> None:
         self.__prefix: str = prefix
         self.__path: Optional[str] = None
-        self.__root: Optional[str] = None
-        self.__action: Optional[str] = None
-        self.__id: Optional[str] = None
         self.__method: Optional[str] = None
-        self.__path_map: _typing.RouteMap = defaultdict(_typing.RouteProps)
+        self.__path_map: _typing.RouteMap = {}
 
-    def when(self, path: str, method: str) -> APIGatewayRoute:
+    def route(self, path: str, method: str) -> APIGatewayRoute:
         self.__validate_http_method(method)
-        self.__path = path if path.startswith("/") else f'/{path}'
-        parts = self.__path.split('/', maxsplit=3)
-        self.__root = parts[0]
-        if len(parts) > 1:
-            self.__action = parts[1]
-        if len(parts) > 2:
-            self.__id = parts[2]
+        self.__path = path[1:] if path.startswith("/") else path
         self.__method = method
         return self
 
-    def then(self, action: _typing.RouteAction) -> None:
+    def to(self, action: _typing.RouteAction) -> None:
         if self.__path is None or self.__method is None:
             raise InvalidRouteException("Missing path or method.")
-        key = self.__prefix
-        if self.__root:
-            key += f"/{self.__root}"
-        if self.__action:
-            key += f"/{self.__action}"
-        if self.__id:
-            key += f"/{self.__id}"
-        self.__path_map[key].methods[self.__method] = action
-        self.__path_map[key].action = self.__action
-        self.__path_map[key].id_ = self.__id
+
+        key = self.build_key(self.__prefix, self.__method)
+        if self.__path not in {"/", ""}:
+            key = self.build_key(f"{self.__prefix}/{self.__path}", self.__method)
+        self.__path_map[key] = action
+
         self.clean_attributes()
 
     def __validate_http_method(self, method: str) -> None:
         try:
-            HTTPMethod(method)
+            _typing.HTTPMethod(method)
         except ValueError:
             raise InvalidRouteException(
                 "Invalid HTTP Method provided. Provide one of the following "
-                + ", ".join(HTTPMethod.list_())
+                + ", ".join(_typing.HTTPMethod.list_())
             )
+
+    @staticmethod
+    def build_key(resource: str, method: str) -> str:
+        return f"{method}::{resource}"
 
     @property
     def prefix(self) -> str:
@@ -75,7 +52,5 @@ class APIGatewayRoute:
         return self.__path_map
 
     def clean_attributes(self) -> None:
-        self.__root = None
-        self.__action = None
-        self.__id = None
+        self.__path = None
         self.__method = None

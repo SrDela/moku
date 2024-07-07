@@ -14,7 +14,7 @@ class TestAPIRouter:
         router = APIGatewayRouter()
         router.add_route(route)
 
-        assert 3 == len(router.routes.keys())
+        assert 4 == len(router.routes.keys())
 
         action = router.resolve(resource="/myroute", method="GET")
         action2 = router.resolve(resource="/myroute/{some_id}", method="GET")
@@ -42,8 +42,8 @@ class TestAPIRouter:
 
     def __build_test_route(self) -> APIGatewayRoute:
         route = APIGatewayRoute("/myroute")
-        route.when(path="/", method="GET").then(self.func)
-        route.when(path="/", method="POST").then(self.func)
-        route.when(path="/{some_id}", method="GET").then(self.func)
-        route.when(path="/extrapath", method="POST").then(self.func2)
+        route.route(path="/", method="GET").to(self.func)
+        route.route(path="/", method="POST").to(self.func)
+        route.route(path="/{some_id}", method="GET").to(self.func)
+        route.route(path="/extrapath", method="POST").to(self.func2)
         return route

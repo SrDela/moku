@@ -1,15 +1,20 @@
 from typing import Dict, Callable, Optional
 from dataclasses import dataclass, field
+from enum import Enum
+
+
+class HTTPMethod(Enum):
+    GET: str = "GET"
+    POST: str = "POST"
+    PATCH: str = "PATCH"
+    PUT: str = "PUT"
+    DELETE: str = "DELETE"
+
+    @classmethod
+    def list_(cls):
+        return [method.value for method in cls]
 
 
 RouteAction = Callable[[dict], any]
 
-
-@dataclass
-class RouteProps:
-    action: Optional[str] = field(default="")
-    id_: Optional[str] = field(default="")
-    methods: Dict[str, RouteAction] = field(default_factory=dict)
-
-
-RouteMap = Dict[str, RouteProps]
+RouteMap = Dict[str, RouteAction]
