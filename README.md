@@ -1,4 +1,5 @@
 # Moku
+
 Moku is an utility set for AWS Lambda that allows you to ease interaction between other AWS services.
 
 ## Supported interactions
@@ -31,7 +32,9 @@ def lambda_handler(event: dict):
 
     return action(event)
 ```
+
 ---
+
 ### S3 Event Mapping
 
 You can map functions to execute for s3 events like a put object event in the lambda handler by using the `S3EventMapper`.
@@ -58,8 +61,10 @@ def lambda_handler(events: dict):
 
     return response_stack
 ```
+
 ---
-### WebSockets API Gateway Routing
+
+### WebSockets API Routing
 
 You can map functions to execute for route keys received via event in the lambda handler by using the `WebSocketAPIRouter`.
 
@@ -81,7 +86,9 @@ def lambda_handler(event: dict):
 
     return action(event)
 ```
+
 ---
+
 ### Authorizer Mapping
 
 You can map authorizer functions and keep all your different authorizers in one place by using the `AuthorizerMapper`.
@@ -110,8 +117,11 @@ def lambda_handler(event: dict):
 
     return procedure(event)
 ```
+
 ---
+
 ### S3 Object Lambda Processor Mapping
+
 You can map processors per file extension with object lambda `ExtensionMapper`.
 
 ```python
@@ -132,7 +142,47 @@ def lambda_handler(event: dict):
     return func(event)
 
 ```
+
 ---
+
+### EventBridge Rule Mapping
+
+You can map functions to EventBridge rules in the lambda handler by using the `EventBridgeMapper`.
+
+```python
+from moku.event_bridge import (
+    EventBridgeRule,
+    EventBridgeRuleDetail,
+    CronBuilder,
+    EventBridgeMapper
+)
+
+
+# Define your function
+def myaction(event: dict):
+    # Do something
+    pass
+
+
+# Then, build your cron
+mycron = CronBuilder.link(myaction).to('daily.report')
+
+# To use mapper you only need to add the rule
+mapper = EventBridgeMapper()
+mapper.add_rule(mycron)
+
+# And call the resolver to get your action according
+# to the received event in your lambda handler
+def lambda_handler(events: dict):
+
+    event_name: str = event.get('detail', {}).get('action', '')
+    action = mapper.resolve(event_name)
+
+    return action(event)
+```
+
+---
+
 ### Custom Lambda Event Handler
 
 You can defined a mapper to expect a custom type of event in order to execute some actions by using the `CustomEventHandler`.
@@ -145,7 +195,9 @@ Custom Event Example:
     ...
 }
 ```
+
 Lambda Handler Example:
+
 ```python
 from moku.lambda_function import CustomEventActionBuilder, CustomEventHandler
 
@@ -162,7 +214,9 @@ handler.add_action(custom_action)
 def lambda_handler(event: dict)
     return handler.resolve(event)
 ```
+
 If you are using `pydantic V2`, you can also specify a model validator for your event. It will be called when resolving and the object will be passed as the argument of the action instead of the original event.
+
 ```python
 from pydantic import BaseModel, Field
 
