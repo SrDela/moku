@@ -35,4 +35,14 @@ jobs:
       - name: Install the project dependencies
         run: poetry install --all-extras
       - name: Run the automated tests
-        run: poetry run pytest -v
+        run: poetry run coverage run -m pytest -v
+      - name: Generate coverage report
+        run: poetry run coverage report
+      - name: Generate coverage HTML
+        run: poetry run coverage html --title "Coverage for ${{ github.sha }}"
+      - name: Store coverage HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov
+          include-hidden-files: true
