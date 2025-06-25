@@ -1,6 +1,6 @@
 # Moku
 
-[![Automated Tests](https://github.com/SrDela/moku/actions/workflows/test.yaml/badge.svg)](https://github.com/SrDela/moku/actions/workflows/test.yaml)
+[![Automated Tests](https://github.com/SrDela/moku/actions/workflows/tests-workflow.yaml/badge.svg)](https://github.com/SrDela/moku/actions/workflows/tests-workflow.yaml)
 
 Moku is an utility set for AWS Lambda that allows you to ease interaction between other AWS services.
 
